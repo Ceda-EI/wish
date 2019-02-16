@@ -30,31 +30,34 @@ function wish_append() {
 	local bg_code=$1
 	local fg_code=$2
 	local text=$3
-	if [[ $fg_code -eq -1 ]]; then
+	if [[ $fg_code == -1 ]]; then
 		local fg="\[\033[0;5;0m\]"
 	else
 		if [[ ${#fg_code} -eq 6 ]]; then
-			local r=$(( 16#${fg_code[0]}${fg_code[1]} ))
-			local g=$(( 16#${fg_code[2]}${fg_code[3]} ))
-			local b=$(( 16#${fg_code[4]}${fg_code[5]} ))
+			local color=($(echo $fg_code | grep -o .))
+			local r=$(( 16#${color[0]}${color[1]} ))
+			local g=$(( 16#${color[2]}${color[3]} ))
+			local b=$(( 16#${color[4]}${color[5]} ))
 			local fg="\[\033[38;2;$r;$g;${b}m\]"
 		else
 			local fg="\[\033[38;5;${fg_code}m\]"
 		fi
 	fi
-	if [[ $bg_code -eq -1 ]]; then
+	if [[ $bg_code == -1 ]]; then
 		local bg="\[\033[0;5;0m\]"
 	else
 		if [[ ${#bg_code} -eq 6 ]]; then
-			local r=$(( 16#${bg_code[0]}${bg_code[1]} ))
-			local g=$(( 16#${bg_code[2]}${bg_code[3]} ))
-			local b=$(( 16#${bg_code[4]}${bg_code[5]} ))
-			local bg="\[\033[38;2;$r;$g;${b}m\]"
+			local color=($(echo $bg_code | grep -o .))
+			local r=$(( 16#${color[0]}${color[1]} ))
+			local g=$(( 16#${color[2]}${color[3]} ))
+			local b=$(( 16#${color[4]}${color[5]} ))
+			local bg="\[\033[48;2;$r;$g;${b}m\]"
 		else
 			local bg="\[\033[48;5;${bg_code}m\]"
 		fi
 	fi
-	if [[ $fg_code -eq -1 ]]; then
+
+	if [[ $fg_code == -1 ]]; then
 		PS1="$PS1$fg${bg}$text"
 	else
 		PS1="$PS1$bg${fg}$text"
