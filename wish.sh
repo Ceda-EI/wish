@@ -27,6 +27,31 @@ function wish_main() {
 	local i
 	for i in $(seq 0 $((${#WISH_PLUGINS[@]} - 1))); do
 		wish_${WISH_PLUGINS[i]}_main $prev
+		if [[ -v WISH_POWERLINE ]] && [[ $WISH_POWERLINE != 0 ]]; then
+			if wish_${WISH_PLUGINS[$i]}_end $prev; then
+				if [[ $i -lt $((${#WISH_PLUGINS[@]} - 1)) ]]; then
+					if wish_${WISH_PLUGINS[$(($i + 1))]}_start $prev; then
+						local plugin=${WISH_PLUGINS[$i]}
+						local next_plugin=${WISH_PLUGINS[$(($i+1))]}
+						local fg=$(eval echo \$WISH_$(echo $plugin |
+							tr '[:lower:]' '[:upper:]')_BG)
+						local bg=$(eval echo \$WISH_$(echo $next_plugin |
+							tr '[:lower:]' '[:upper:]')_BG)
+						PS1="$PS1\[\033[38;5;${fg}m\]\[\033[48;5;${bg}m\]"
+					fi
+				else
+					local plugin=${WISH_PLUGINS[$i]}
+					local fg=$(eval echo \$WISH_$(echo $plugin |
+						tr '[:lower:]' '[:upper:]')_BG)
+					PS1="$PS1\[\033[0;5;0m\]"
+					PS1="$PS1\[\033[38;5;${fg}m\]"
+				fi
+			fi
+		fi
+
+		if [[ $i -eq $((${#WISH_PLUGINS[@]} - 1)) ]]; then
+			PS1="$PS1\[\033[0;5;0m\]"
+		fi
 	done
 }
 
