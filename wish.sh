@@ -18,6 +18,11 @@ function wish_init() {
 	done
 
 	[[ $? -ne 0 ]] && echo "Theme $WISH_THEME not found." >&2
+
+	# Call plugins to set colors
+	for i in ${WISH_PLUGINS[@]}; do
+		eval wish_$(echo $i)_set_colors $prev
+	done
 }
 
 
