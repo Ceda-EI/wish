@@ -7,9 +7,10 @@ function wish_newline_end() {
 }
 
 function wish_newline_set_colors() {
-	return
+	WISH_NEWLINE_BG=-1
+	WISH_NEWLINE_FG=-1
 }
 
 function wish_newline_main() {
-	PS1="$PS1\n"
+	wish_append -1 -1 "\n"
 }

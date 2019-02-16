@@ -25,6 +25,28 @@ function wish_init() {
 	done
 }
 
+# Usage: wish_append bg fg text
+function wish_append() {
+	local bg_code=$1
+	local fg_code=$2
+	local text=$3
+	if [[ $fg_code -eq -1 ]]; then
+		local fg="\[\033[0;5;0m\]"
+	else
+		local fg="\[\033[38;5;${fg_code}m\]"
+	fi
+	if [[ $bg_code -eq -1 ]]; then
+		local bg="\[\033[0;5;0m\]"
+	else
+		local bg="\[\033[48;5;${bg_code}m\]"
+	fi
+	if [[ $fg_code -eq -1 ]]; then
+		PS1="$PS1$fg${bg}$text"
+	else
+		PS1="$PS1$bg${fg}$text"
+	fi
+}
+
 
 function wish_main() {
 	local prev=$?
@@ -42,14 +64,13 @@ function wish_main() {
 							tr '[:lower:]' '[:upper:]')_BG)
 						local bg=$(eval echo \$WISH_$(echo $next_plugin |
 							tr '[:lower:]' '[:upper:]')_BG)
-						PS1="$PS1\[\033[38;5;${fg}m\]\[\033[48;5;${bg}m\]"
+						wish_append $bg $fg 
 					fi
 				else
 					local plugin=${WISH_PLUGINS[$i]}
 					local fg=$(eval echo \$WISH_$(echo $plugin |
 						tr '[:lower:]' '[:upper:]')_BG)
-					PS1="$PS1\[\033[0;5;0m\]"
-					PS1="$PS1\[\033[38;5;${fg}m\]"
+					wish_append -1 $fg 
 				fi
 			fi
 		fi
