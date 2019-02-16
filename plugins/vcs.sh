@@ -26,7 +26,7 @@ function wish_vcs_main() {
 
 		local add=$(echo "$op" | awk '{a += $1} END {print a}')
 		local del=$(echo "$op" | awk '{d += $2} END {print d}')
-		if [[ $add != 0 ]] && [[ $del != 0 ]]; then
+		if [[ $add != 0 ]] || [[ $del != 0 ]]; then
 			git="$git+$add -$del "
 		fi
 		wish_append $WISH_VCS_BG $WISH_VCS_FG "$git"
