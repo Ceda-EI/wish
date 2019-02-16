@@ -33,12 +33,26 @@ function wish_append() {
 	if [[ $fg_code -eq -1 ]]; then
 		local fg="\[\033[0;5;0m\]"
 	else
-		local fg="\[\033[38;5;${fg_code}m\]"
+		if [[ ${#fg_code} -eq 6 ]]; then
+			local r=$(( 16#${fg_code[0]}${fg_code[1]} ))
+			local g=$(( 16#${fg_code[2]}${fg_code[3]} ))
+			local b=$(( 16#${fg_code[4]}${fg_code[5]} ))
+			local fg="\[\033[38;2;$r;$g;${b}m\]"
+		else
+			local fg="\[\033[38;5;${fg_code}m\]"
+		fi
 	fi
 	if [[ $bg_code -eq -1 ]]; then
 		local bg="\[\033[0;5;0m\]"
 	else
-		local bg="\[\033[48;5;${bg_code}m\]"
+		if [[ ${#bg_code} -eq 6 ]]; then
+			local r=$(( 16#${bg_code[0]}${bg_code[1]} ))
+			local g=$(( 16#${bg_code[2]}${bg_code[3]} ))
+			local b=$(( 16#${bg_code[4]}${bg_code[5]} ))
+			local bg="\[\033[38;2;$r;$g;${b}m\]"
+		else
+			local bg="\[\033[48;5;${bg_code}m\]"
+		fi
 	fi
 	if [[ $fg_code -eq -1 ]]; then
 		PS1="$PS1$fg${bg}$text"
