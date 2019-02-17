@@ -15,8 +15,8 @@ function wish_vcs_set_colors() {
 }
 
 function wish_vcs_main() {
-	local op=$(git diff --numstat HEAD 2> /dev/null)
-	if [[ $op != "" ]]; then
+	local op=$(git diff --numstat HEAD 2> /dev/null || echo -1)
+	if [[ $op != "-1" ]]; then
 		local git
 		if [[ $(git status --porcelain 2> /dev/null | grep "^??")  != "" ]]; then
 			local git=" $WISH_VCS_GIT_UNTRACKED_SYMBOL"
