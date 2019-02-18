@@ -18,11 +18,12 @@ function wish_vcs_main() {
 	local op=$(git diff --numstat HEAD 2> /dev/null || echo -1)
 	if [[ $op != "-1" ]]; then
 		local git
-		if [[ $(git status --porcelain 2> /dev/null | grep "^??")  != "" ]]; then
-			local git=" $WISH_VCS_GIT_UNTRACKED_SYMBOL"
-		fi
 		git="$git $WISH_VCS_GIT_SYMBOL "
 		git="$git$(git branch | grep -F \* | sed 's/\* //') "
+
+		if [[ $(git status --porcelain 2> /dev/null | grep "^??")  != "" ]]; then
+			git="$git$WISH_VCS_GIT_UNTRACKED_SYMBOL "
+		fi
 
 		local add=$(echo "$op" | awk '{a += $1} END {print a}')
 		local del=$(echo "$op" | awk '{d += $2} END {print d}')
