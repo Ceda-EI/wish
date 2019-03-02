@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 local i
-local gradient=(ffff5f 7ad767 66b097 5e7388 534d61 3a3338 121212)
-local fg_gradient=(000000 000000 000000 000000 000000 ffffff ffffff)
+local gradient=(226 118 37 66 60 237 233)
+local fg_gradient=(16 16 16 16 16 15 15)
 local j=0
 for i in ${WISH_PLUGINS[@]}; do
 	[[ $i == "newline" ]] && j=0 && continue
