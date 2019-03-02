@@ -31,7 +31,7 @@ function wish_append() {
 	local fg_code=$2
 	local text=$3
 	if [[ $fg_code == -1 ]]; then
-		local fg="\[\033[0;5;0m\]"
+		local fg=$(tput sgr0)
 	else
 		if [[ ${#fg_code} -eq 6 ]]; then
 			local color=($(echo $fg_code | grep -o .))
@@ -40,11 +40,11 @@ function wish_append() {
 			local b=$(( 16#${color[4]}${color[5]} ))
 			local fg="\[\033[38;2;$r;$g;${b}m\]"
 		else
-			local fg="\[\033[38;5;${fg_code}m\]"
+			local fg=$(tput setaf $fg_code)
 		fi
 	fi
 	if [[ $bg_code == -1 ]]; then
-		local bg="\[\033[0;5;0m\]"
+		local bg=$(tput sgr0)
 	else
 		if [[ ${#bg_code} -eq 6 ]]; then
 			local color=($(echo $bg_code | grep -o .))
@@ -53,7 +53,7 @@ function wish_append() {
 			local b=$(( 16#${color[4]}${color[5]} ))
 			local bg="\[\033[48;2;$r;$g;${b}m\]"
 		else
-			local bg="\[\033[48;5;${bg_code}m\]"
+			local bg=$(tput setab $bg_code)
 		fi
 	fi
 
