@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 curl https://gitlab.com/ceda_ei/wish/-/archive/master/wish-master.tar -o /tmp/wish.tar
+mkdir $HOME/.config 2> /dev/null
 cd /tmp/
 tar xf wish.tar
 mv wish-master/ wish/
