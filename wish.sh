@@ -69,6 +69,12 @@ function wish_main() {
 	local prev=$?
 	PS1=""
 	local i
+	if [[ $WISH_AUTONEWLINE != 0 ]]; then
+		echo -ne "\033[6n" ; read -s -d ';'; read -s -d R WISH_CURSOR_POSITION
+		if [[ $WISH_CURSOR_POSITION != "1" ]]; then
+			PS1="\n"
+		fi
+	fi
 	for i in $(seq 0 $((${#WISH_PLUGINS[@]} - 1))); do
 		wish_${WISH_PLUGINS[i]}_main $prev
 		if [[ -v WISH_POWERLINE ]] && [[ $WISH_POWERLINE != 0 ]]; then
