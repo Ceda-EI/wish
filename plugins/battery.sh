@@ -16,12 +16,17 @@ function wish_battery_set_colors() {
 
 function wish_battery_main() {
 	local path=/sys/class/power_supply/$WISH_BATTERY_ID
-	local battery=$(($(cat $path/charge_now) * 100 / $(cat $path/charge_full)))%
-	if [[ $(cat $path/status) == "Charging" ]] ||
-		[[ $(cat $path/status) == "Full" ]]; then
-		battery="$WISH_BATTERY_CHARGING $battery"
+	local battery
+	if [[ -f $path/charge_now ]]; then
+		battery=$(($(cat $path/charge_now) * 100 / $(cat $path/charge_full)))%
+		if [[ $(cat $path/status) == "Charging" ]] ||
+			[[ $(cat $path/status) == "Full" ]]; then
+			battery="$WISH_BATTERY_CHARGING $battery"
+		else
+			battery="$WISH_BATTERY_DISCHARGING $battery"
+		fi
 	else
-		battery="$WISH_BATTERY_DISCHARGING $battery"
+		battery="$WISH_BATTERY_ID not found"
 	fi
 	wish_append $WISH_BATTERY_BG $WISH_BATTERY_FG " $battery "
 }
