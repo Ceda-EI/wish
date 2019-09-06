@@ -2,26 +2,36 @@
 
 function wish_init() {
 	# Source all plugins
-	local i
-	local j
-	for i in ${WISH_PLUGINS[@]}; do
-		for j in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
-			source "$j/wish/plugins/$i.sh" &> /dev/null && break
+	local plugin
+	local path
+	for plugin in ${WISH_PLUGINS[@]}; do
+		for path in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
+			source "$path/wish/plugins/$plugin.sh" &> /dev/null && break
 		done
 		[[ $? -ne 0 ]] && echo "Plugin $i not found." >&2
 	done
 
 	# Source theme
 	WISH_THEME=${WISH_THEME:-plain}
-	for i in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
-		source "$i/wish/themes/$WISH_THEME.sh" &> /dev/null && break
+	while :; do
+		for theme in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
+			source "$theme/wish/themes/$WISH_THEME.sh" &> /dev/null && break
+		done
+		if [[ $? -eq 0 ]]; then
+			break
+		else
+			echo "Theme $WISH_THEME not found. Using theme plain." >&2
+			if [[ $WISH_THEME == "plain" ]]; then
+				break
+			else
+				WISH_THEME=plain
+			fi
+		fi
 	done
 
-	[[ $? -ne 0 ]] && echo "Theme $WISH_THEME not found." >&2
-
 	# Call plugins to set colors
-	for i in ${WISH_PLUGINS[@]}; do
-		eval wish_$(echo $i)_set_colors $prev
+	for plugin in ${WISH_PLUGINS[@]}; do
+		eval wish_$(echo $plugin)_set_colors $prev
 	done
 }
 
