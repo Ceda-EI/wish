@@ -35,37 +35,45 @@ function wish_init() {
 	done
 }
 
+# Usage: color_to_escape_code [3|4] color
+#
+# Parameters:
+# - [3|4]: Use 3 if escape code is for foreground, 4 for background
+# - color: -1 to reset, 0-255 for terminal color codes. 6 digit hexadecimal
+# value for true color.
+#
+# Return value: Prints escape code that sets the fg/bg as requested.
+function color_to_escape_code() {
+	local choice=$1
+	local color=$2
+	if [[ $color == -1 ]]; then
+		echo "\[\033[0;5;0m\]"
+	else
+		if [[ ${#fg_code} -eq 6 ]]; then
+			local r=$(( 16#${color:0:2} ))
+			local g=$(( 16#${color:2:2} ))
+			local b=$(( 16#${color:4:2} ))
+			echo "\[\033[${choice}8;2;$r;$g;${b}m\]"
+		else
+			echo "\[\033[${choice}8;5;${fg_code}m\]"
+		fi
+	fi
+}
+
 # Usage: wish_append bg fg text
+#
+# Parameters:
+# - fg, bg: -1 to reset, 0-255 for terminal color codes. 6 digit hexadecimal
+# value for true color.
+# - text: Text of the plugin
+#
+# Return value: None
 function wish_append() {
 	local bg_code=$1
 	local fg_code=$2
 	local text=$3
-	if [[ $fg_code == -1 ]]; then
-		local fg="\[\033[0;5;0m\]"
-	else
-		if [[ ${#fg_code} -eq 6 ]]; then
-			local color=($(echo $fg_code | grep -o .))
-			local r=$(( 16#${color[0]}${color[1]} ))
-			local g=$(( 16#${color[2]}${color[3]} ))
-			local b=$(( 16#${color[4]}${color[5]} ))
-			local fg="\[\033[38;2;$r;$g;${b}m\]"
-		else
-			local fg="\[\033[38;5;${fg_code}m\]"
-		fi
-	fi
-	if [[ $bg_code == -1 ]]; then
-		local bg="\[\033[0;5;0m\]"
-	else
-		if [[ ${#bg_code} -eq 6 ]]; then
-			local color=($(echo $bg_code | grep -o .))
-			local r=$(( 16#${color[0]}${color[1]} ))
-			local g=$(( 16#${color[2]}${color[3]} ))
-			local b=$(( 16#${color[4]}${color[5]} ))
-			local bg="\[\033[48;2;$r;$g;${b}m\]"
-		else
-			local bg="\[\033[48;5;${bg_code}m\]"
-		fi
-	fi
+	local fg=$(color_to_escape_code 3 $fg_code)
+	local bg=$(color_to_escape_code 4 $bg_code)
 
 	if [[ $fg_code == -1 ]]; then
 		PS1="$PS1$fg${bg}$text"
