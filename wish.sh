@@ -101,16 +101,13 @@ function wish_main() {
 					if wish_${WISH_PLUGINS[$(($i + 1))]}_start $prev; then
 						local plugin=${WISH_PLUGINS[$i]}
 						local next_plugin=${WISH_PLUGINS[$(($i+1))]}
-						local fg_name=$(echo WISH_$(echo $plugin |
-							tr '[:lower:]' '[:upper:]')_BG)
-						local bg_name=$(echo WISH_$(echo $next_plugin |
-							tr '[:lower:]' '[:upper:]')_BG)
+						local fg_name="WISH_${plugin^^}_BG"
+						local bg_name="WISH_${next_plugin^^}_BG"
 						wish_append ${!bg_name} ${!fg_name} 
 					fi
 				else
 					local plugin=${WISH_PLUGINS[$i]}
-					local fg_name=$(echo WISH_$(echo $plugin |
-						tr '[:lower:]' '[:upper:]')_BG)
+					local fg_name="WISH_${plugin^^}_BG"
 					wish_append -1 ${!fg_name} 
 				fi
 			fi
