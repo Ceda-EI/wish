@@ -14,9 +14,9 @@ function wish_path_set_colors() {
 
 function wish_path_main() {
 	if [[ -w $PWD ]]; then
-		local path=" \w "
+		local path=" ${PWD/$HOME/\~} "
 	else
-		local path=" \w$WISH_PATH_NO_WRITE_SUFFIX "
+		local path=" ${PWD/$HOME/\~}$WISH_PATH_NO_WRITE_SUFFIX "
 	fi
 	wish_append $WISH_PATH_BG $WISH_PATH_FG "$path"
 }

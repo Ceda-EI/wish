@@ -12,5 +12,5 @@ function wish_username_set_colors() {
 }
 
 function wish_username_main() {
-	wish_append $WISH_USERNAME_BG $WISH_USERNAME_FG " \u "
+	wish_append $WISH_USERNAME_BG $WISH_USERNAME_FG " $USER "
 }

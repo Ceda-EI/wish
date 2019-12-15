@@ -12,5 +12,5 @@ function wish_hostname_set_colors() {
 }
 
 function wish_hostname_main() {
-	wish_append $WISH_HOSTNAME_BG $WISH_HOSTNAME_FG " \h "
+	wish_append $WISH_HOSTNAME_BG $WISH_HOSTNAME_FG " $HOSTNAME "
 }
