@@ -4,7 +4,7 @@ function wish_init() {
 	# Source all plugins
 	local plugin
 	local path
-	for plugin in ${WISH_PLUGINS[@]}; do
+	for plugin in ${WISH_PLUGINS[@]} ${WISH_RIGHT_PLUGINS[@]}; do
 		for path in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
 			source "$path/wish/plugins/$plugin.sh" &> /dev/null && break
 		done
@@ -30,7 +30,7 @@ function wish_init() {
 	done
 
 	# Call plugins to set colors
-	for plugin in ${WISH_PLUGINS[@]}; do
+	for plugin in ${WISH_PLUGINS[@]} ${WISH_RIGHT_PLUGINS[@]}; do
 		eval wish_$(echo $plugin)_set_colors $prev
 	done
 }
@@ -75,24 +75,48 @@ function wish_append() {
 	local fg=$(color_to_escape_code 3 $fg_code)
 	local bg=$(color_to_escape_code 4 $bg_code)
 
+	if [[ $WISH_STATE == 1 ]]; then
+		WISH_RPL=$((WISH_RPL + ${#text}))
+	fi
 	if [[ $fg_code == -1 ]]; then
-		PS1="$PS1$fg${bg}$text"
+		case $WISH_STATE in
+			0)
+				WISH_LEFT_PS1="$WISH_LEFT_PS1$fg${bg}$text"
+				;;
+			1)
+				WISH_RIGHT_PS1="$WISH_RIGHT_PS1$fg${bg}$text"
+				;;
+		esac
 	else
-		PS1="$PS1$bg${fg}$text"
+		case $WISH_STATE in
+			0)
+				WISH_LEFT_PS1="$WISH_LEFT_PS1$bg$fg$text"
+				;;
+			1)
+				WISH_RIGHT_PS1="$WISH_RIGHT_PS1$bg$fg$text"
+				;;
+		esac
 	fi
 }
 
 
 function wish_main() {
 	local prev=$?
+	# Set local IFS to avoid being affected by shell's IFS
+	local IFS=$' \n'
 	PS1=""
+	WISH_LEFT_PS1=""
+	WISH_RIGHT_PS1=""
 	local i
+	# Set newline
 	if [[ $WISH_AUTONEWLINE != 0 ]]; then
 		echo -ne "\033[6n" ; read -s -d ';'; read -s -d R WISH_CURSOR_POSITION
 		if [[ $WISH_CURSOR_POSITION != "1" ]]; then
 			PS1="\n"
 		fi
 	fi
+	# Generate left prompt.
+	WISH_STATE=0  # 0 = left prompt, 1 = right prompt
 	for i in $(seq 0 $((${#WISH_PLUGINS[@]} - 1))); do
 		wish_${WISH_PLUGINS[i]}_main $prev
 		if [[ -v WISH_POWERLINE ]] && [[ $WISH_POWERLINE != 0 ]]; then
@@ -112,11 +136,27 @@ function wish_main() {
 				fi
 			fi
 		fi
-
-		if [[ $i -eq $((${#WISH_PLUGINS[@]} - 1)) ]]; then
-			PS1="$PS1\[\033[0;5;0m\]"
-		fi
 	done
+	# Generate Right prompt.
+	WISH_STATE=1
+	WISH_RPL=0
+	for i in $(seq 0 $((${#WISH_RIGHT_PLUGINS[@]} - 1))); do
+		if [[ -v WISH_POWERLINE && WISH_POWERLINE != 0 ]]; then
+			if [[ $i == 0 ]]; then
+				local plugin=${WISH_RIGHT_PLUGINS[$i]}
+				local fg_name="WISH_${plugin^^}_BG"
+				wish_append -1 ${!fg_name} 
+			else
+				local plugin=${WISH_RIGHT_PLUGINS[$i]}
+				local prev_plugin=${WISH_RIGHT_PLUGINS[$(($i-1))]}
+				local fg_name="WISH_${plugin^^}_BG"
+				local bg_name="WISH_${prev_plugin^^}_BG"
+				wish_append ${!bg_name} ${!fg_name} 
+			fi
+		fi
+		wish_${WISH_RIGHT_PLUGINS[$i]}_main $prev
+	done
+	PS1=$PS1"\[\e7\e[$(($COLUMNS - $WISH_RPL + 1))G$WISH_RIGHT_PS1\e8\]$WISH_LEFT_PS1\[\033[0;5;0m\]"
 }
 
 wish_init
