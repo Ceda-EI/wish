@@ -141,17 +141,19 @@ function wish_main() {
 	WISH_STATE=1
 	WISH_RPL=0
 	for i in $(seq 0 $((${#WISH_RIGHT_PLUGINS[@]} - 1))); do
-		if [[ -v WISH_POWERLINE && WISH_POWERLINE != 0 ]]; then
-			if [[ $i == 0 ]]; then
-				local plugin=${WISH_RIGHT_PLUGINS[$i]}
-				local fg_name="WISH_${plugin^^}_BG"
-				wish_append -1 ${!fg_name} 
-			else
-				local plugin=${WISH_RIGHT_PLUGINS[$i]}
-				local prev_plugin=${WISH_RIGHT_PLUGINS[$(($i-1))]}
-				local fg_name="WISH_${plugin^^}_BG"
-				local bg_name="WISH_${prev_plugin^^}_BG"
-				wish_append ${!bg_name} ${!fg_name} 
+		if [[ -v WISH_POWERLINE ]] && [[ $WISH_POWERLINE != 0 ]]; then
+			if wish_${WISH_RIGHT_PLUGINS[$i]}_end $prev; then
+				if [[ $i == 0 ]]; then
+					local plugin=${WISH_RIGHT_PLUGINS[$i]}
+					local fg_name="WISH_${plugin^^}_BG"
+					wish_append -1 ${!fg_name} 
+				elif wish_${WISH_RIGHT_PLUGINS[$(($i - 1))]}_start $prev; then
+					local plugin=${WISH_RIGHT_PLUGINS[$i]}
+					local prev_plugin=${WISH_RIGHT_PLUGINS[$(($i-1))]}
+					local fg_name="WISH_${plugin^^}_BG"
+					local bg_name="WISH_${prev_plugin^^}_BG"
+					wish_append ${!bg_name} ${!fg_name} 
+				fi
 			fi
 		fi
 		wish_${WISH_RIGHT_PLUGINS[$i]}_main $prev
