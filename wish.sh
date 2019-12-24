@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# INTERNAL USE ONLY! Do not use this in plugins.
+function wish_print_right_prompt() {
+	local idx=0
+	for i in ${WISH_RPL[@]}; do
+		echo "\e[$(($COLUMNS - $i + 1))G${WISH_RIGHT_PS1[$idx]}"
+		((idx++))
+	done
+}
+
 function wish_init() {
 	# Source all plugins
 	local plugin
@@ -60,6 +69,21 @@ function color_to_escape_code() {
 	fi
 }
 
+# INTERNAL USE ONLY! Do not use this in plugins.
+# Usage: wish_append_right escape_codes text
+function wish_append_right() {
+	local text="$2"
+	local colors="$1"
+	if [[ $text == "\n" ]]; then
+		((WISH_RPLINE++))
+		WISH_RIGHT_PS1=("${WISH_RIGHT_PS1[@]}" "")
+		WISH_RPL=(${WISH_RPL[@]} 0)
+	else
+		WISH_RIGHT_PS1[$WISH_RPLINE]="${WISH_RIGHT_PS1[$WISH_RPLINE]}$colors$text"
+		WISH_RPL[$WISH_RPLINE]=$((${WISH_RPL[$WISH_RPLINE]} + ${#text}))
+	fi
+}
+
 # Usage: wish_append bg fg text
 #
 # Parameters:
@@ -75,16 +99,13 @@ function wish_append() {
 	local fg=$(color_to_escape_code 3 $fg_code)
 	local bg=$(color_to_escape_code 4 $bg_code)
 
-	if [[ $WISH_STATE == 1 ]]; then
-		WISH_RPL=$((WISH_RPL + ${#text}))
-	fi
 	if [[ $fg_code == -1 ]]; then
 		case $WISH_STATE in
 			0)
 				WISH_LEFT_PS1="$WISH_LEFT_PS1$fg${bg}$text"
 				;;
 			1)
-				WISH_RIGHT_PS1="$WISH_RIGHT_PS1$fg${bg}$text"
+				wish_append_right "$fg$bg" "$text"
 				;;
 		esac
 	else
@@ -93,7 +114,7 @@ function wish_append() {
 				WISH_LEFT_PS1="$WISH_LEFT_PS1$bg$fg$text"
 				;;
 			1)
-				WISH_RIGHT_PS1="$WISH_RIGHT_PS1$bg$fg$text"
+				wish_append_right "$bg$fg" "$text"
 				;;
 		esac
 	fi
@@ -106,7 +127,9 @@ function wish_main() {
 	local IFS=$' \n'
 	PS1=""
 	WISH_LEFT_PS1=""
-	WISH_RIGHT_PS1=""
+	WISH_RIGHT_PS1=("")
+	WISH_RPL=(0)
+	WISH_RPLINE=0
 	local i
 	# Set newline
 	if [[ $WISH_AUTONEWLINE != 0 ]]; then
@@ -139,7 +162,6 @@ function wish_main() {
 	done
 	# Generate Right prompt.
 	WISH_STATE=1
-	WISH_RPL=0
 	for i in $(seq 0 $((${#WISH_RIGHT_PLUGINS[@]} - 1))); do
 		if [[ -v WISH_POWERLINE ]] && [[ $WISH_POWERLINE != 0 ]]; then
 			if wish_${WISH_RIGHT_PLUGINS[$i]}_end $prev; then
@@ -158,7 +180,11 @@ function wish_main() {
 		fi
 		wish_${WISH_RIGHT_PLUGINS[$i]}_main $prev
 	done
-	PS1=$PS1"\[\e7\e[$(($COLUMNS - $WISH_RPL + 1))G$WISH_RIGHT_PS1\e8\]$WISH_LEFT_PS1\[\033[0;5;0m\]"
+	# Save cursor position, print right prompt, restore cursor position,
+	# print left prompt, reset terminal
+	PS1=$PS1"\[\e7"
+	PS1="$PS1$(wish_print_right_prompt)"
+	PS1="$PS1\e8\]$WISH_LEFT_PS1\[\033[0;5;0m\]"
 }
 
 wish_init
