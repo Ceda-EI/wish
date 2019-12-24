@@ -76,10 +76,13 @@ function wish_append_left() {
 	if [[ $text == "\n" ]]; then
 		((WISH_LPLINE++))
 		WISH_LPL=(${WISH_LPL[@]} 0)
+		WISH_LEFT_PS1="$WISH_LEFT_PS1$colors$text"
 	else
-		WISH_LPL[$WISH_LPLINE]=$((${WISH_LPL[$WISH_LPLINE]} + ${#text}))
+		if [[ $((${WISH_LPL[$WISH_LPLINE]} + ${#text})) -lt $COLUMNS ]]; then
+			WISH_LEFT_PS1="$WISH_LEFT_PS1$colors$text"
+			WISH_LPL[$WISH_LPLINE]=$((${WISH_LPL[$WISH_LPLINE]} + ${#text}))
+		fi
 	fi
-	WISH_LEFT_PS1="$WISH_LEFT_PS1$colors$text"
 }
 
 # INTERNAL USE ONLY! Do not use this in plugins.
@@ -91,7 +94,7 @@ function wish_append_right() {
 		((WISH_RPLINE++))
 		WISH_RIGHT_PS1=("${WISH_RIGHT_PS1[@]}" "")
 		WISH_RPL=(${WISH_RPL[@]} 0)
-	else
+	elif [[ $((${WISH_LPL[$WISH_RPLINE]} + ${WISH_RPL[$WISH_RPLINE]} + ${#text})) -lt $COLUMNS ]]; then
 		WISH_RIGHT_PS1[$WISH_RPLINE]="${WISH_RIGHT_PS1[$WISH_RPLINE]}$colors$text"
 		WISH_RPL[$WISH_RPLINE]=$((${WISH_RPL[$WISH_RPLINE]} + ${#text}))
 	fi
