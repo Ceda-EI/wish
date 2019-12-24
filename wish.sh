@@ -68,6 +68,19 @@ function color_to_escape_code() {
 		fi
 	fi
 }
+# INTERNAL USE ONLY! Do not use this in plugins.
+# Usage: wish_append_left escape_codes text
+function wish_append_left() {
+	local text="$2"
+	local colors="$1"
+	if [[ $text == "\n" ]]; then
+		((WISH_LPLINE++))
+		WISH_LPL=(${WISH_LPL[@]} 0)
+	else
+		WISH_LPL[$WISH_LPLINE]=$((${WISH_LPL[$WISH_LPLINE]} + ${#text}))
+	fi
+	WISH_LEFT_PS1="$WISH_LEFT_PS1$colors$text"
+}
 
 # INTERNAL USE ONLY! Do not use this in plugins.
 # Usage: wish_append_right escape_codes text
@@ -102,7 +115,7 @@ function wish_append() {
 	if [[ $fg_code == -1 ]]; then
 		case $WISH_STATE in
 			0)
-				WISH_LEFT_PS1="$WISH_LEFT_PS1$fg${bg}$text"
+				wish_append_left "$fg$bg" "$text"
 				;;
 			1)
 				wish_append_right "$fg$bg" "$text"
@@ -111,7 +124,7 @@ function wish_append() {
 	else
 		case $WISH_STATE in
 			0)
-				WISH_LEFT_PS1="$WISH_LEFT_PS1$bg$fg$text"
+				wish_append_left "$bg$fg" "$text"
 				;;
 			1)
 				wish_append_right "$bg$fg" "$text"
@@ -128,8 +141,10 @@ function wish_main() {
 	PS1=""
 	WISH_LEFT_PS1=""
 	WISH_RIGHT_PS1=("")
+	WISH_LPL=(0)
 	WISH_RPL=(0)
 	WISH_RPLINE=0
+	WISH_LPLINE=0
 	local i
 	# Set newline
 	if [[ $WISH_AUTONEWLINE != 0 ]]; then
