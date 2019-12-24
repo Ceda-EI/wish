@@ -100,6 +100,7 @@ function wish_append_right() {
 	fi
 }
 
+# Public API
 # Usage: wish_append bg fg text
 #
 # Parameters:
@@ -136,6 +137,18 @@ function wish_append() {
 	fi
 }
 
+# Public API
+# Usage: wish_remaining_chars
+# Parameters: None
+# Return Value: Capture stdout to get the remaining characters available in the
+# line.
+wish_remaining_chars() {
+	if [[ $WISH_STATE -eq 0 ]]; then
+		echo "$(( $COLUMNS - ${WISH_LPL[$WISH_LPLINE]} ))"
+	else
+		echo "$(( $COLUMNS - ${WISH_LPL[$WISH_RPLINE]} - ${WISH_RPL[$WISH_RPLINE]} ))"
+	fi
+}
 
 function wish_main() {
 	local prev=$?
