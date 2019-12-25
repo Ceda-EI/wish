@@ -73,14 +73,15 @@ function color_to_escape_code() {
 function wish_append_left() {
 	local text="$2"
 	local colors="$1"
+	local prompt_text="${text@P}"
 	if [[ $text == "\n" ]]; then
 		((WISH_LPLINE++))
 		WISH_LPL=(${WISH_LPL[@]} 0)
 		WISH_LEFT_PS1="$WISH_LEFT_PS1$colors$text"
 	else
-		if [[ $((${WISH_LPL[$WISH_LPLINE]} + ${#text})) -lt $COLUMNS ]]; then
+		if [[ $((${WISH_LPL[$WISH_LPLINE]} + ${#prompt_text})) -lt $COLUMNS ]]; then
 			WISH_LEFT_PS1="$WISH_LEFT_PS1$colors$text"
-			WISH_LPL[$WISH_LPLINE]=$((${WISH_LPL[$WISH_LPLINE]} + ${#text}))
+			WISH_LPL[$WISH_LPLINE]=$((${WISH_LPL[$WISH_LPLINE]} + ${#prompt_text}))
 		fi
 	fi
 }
@@ -90,13 +91,14 @@ function wish_append_left() {
 function wish_append_right() {
 	local text="$2"
 	local colors="$1"
+	local prompt_text="${text@P}"
 	if [[ $text == "\n" ]]; then
 		((WISH_RPLINE++))
 		WISH_RIGHT_PS1=("${WISH_RIGHT_PS1[@]}" "")
 		WISH_RPL=(${WISH_RPL[@]} 0)
-	elif [[ $((${WISH_LPL[$WISH_RPLINE]} + ${WISH_RPL[$WISH_RPLINE]} + ${#text})) -lt $COLUMNS ]]; then
+	elif [[ $((${WISH_LPL[$WISH_RPLINE]} + ${WISH_RPL[$WISH_RPLINE]} + ${#prompt_text})) -lt $COLUMNS ]]; then
 		WISH_RIGHT_PS1[$WISH_RPLINE]="${WISH_RIGHT_PS1[$WISH_RPLINE]}$colors$text"
-		WISH_RPL[$WISH_RPLINE]=$((${WISH_RPL[$WISH_RPLINE]} + ${#text}))
+		WISH_RPL[$WISH_RPLINE]=$((${WISH_RPL[$WISH_RPLINE]} + ${#prompt_text}))
 	fi
 }
 
