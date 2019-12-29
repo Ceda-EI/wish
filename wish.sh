@@ -17,7 +17,7 @@ function wish_init() {
 		for path in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
 			source "$path/wish/plugins/$plugin.sh" &> /dev/null && break
 		done
-		[[ $? -ne 0 ]] && echo "Plugin $i not found." >&2
+		[[ $? -ne 0 ]] && echo "Plugin $plugin not found." >&2
 	done
 
 	# Source theme
