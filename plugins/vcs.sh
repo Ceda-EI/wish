@@ -10,7 +10,7 @@ function wish_vcs_set_colors() {
 	WISH_VCS_FG=${WISH_VCS_FG:-$WISH_DEFAULT_FG}
 	WISH_VCS_BG=${WISH_VCS_BG:-$WISH_DEFAULT_BG}
 	WISH_VCS_GIT_SYMBOL=${WISH_VCS_GIT:-}
-	WISH_VCS_DEFAULT=${WISH_VCS_DEFAULT:-$}
+	[[ -v WISH_VCS_DEFAULT ]] || WISH_VCS_DEFAULT="$"
 	WISH_VCS_GIT_UNTRACKED_SYMBOL=${WISH_VCS_GIT_UNTRACKED_SYMBOL:-●}
 }
 
@@ -32,7 +32,7 @@ function wish_vcs_main() {
 		fi
 		wish_append $WISH_VCS_BG $WISH_VCS_FG "$git"
 	else
-		wish_append $WISH_VCS_BG $WISH_VCS_FG " $WISH_VCS_DEFAULT "
+		wish_append $WISH_VCS_BG $WISH_VCS_FG "$WISH_VCS_DEFAULT"
 	fi
 }
 
