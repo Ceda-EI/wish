@@ -27,6 +27,11 @@ function wish_init() {
 		fi
 	done
 	# Source all plugins
+	# If WISH_CONFIG_FILE is not set, then assume that the user hasn't updated
+	# to a config file yet. Set WISH_PLUGINS_SOURCE=WISH_PLUGINS.
+	if [[ ! -v WISH_CONFIG_FILE ]]; then
+		WISH_PLUGINS_SOURCE=("${WISH_PLUGINS[@]}" "${WISH_RIGHT_PLUGINS[@]}")
+	fi
 	local plugin
 	local path
 	for plugin in ${WISH_PLUGINS_SOURCE[@]}; do
