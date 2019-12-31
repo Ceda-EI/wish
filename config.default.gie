@@ -1,0 +1,59 @@
+# vim: set ft=dosini:
+#
+# Comments start with a # or ; and always exist on a line of their own.
+#
+# Key value pairs are in the form of key = value. Keys cannot have whitespaces
+# or = in them. Values can have any character as part of them. Surrounding
+# spaces in values are stripped away. To keep surrounding spaces as a part of
+# the value. Although, keys are case-sensitive in gINIe, wish treats them case-
+# insensitively.
+#
+# Block names are enclosed in [] (e.g. [core]). Block names are case sensitive.
+# All key value pairs after a block starts and before the next block begins are
+# considered a part of that block. All key value pairs must be in a block.
+#
+# Available Blocks:
+#
+#   core: Core block configures Wish itself. Available keys are:
+#        - auto_newline: Automatically add a newline if last line of output
+#          doesn't end in newline. (0 to disable, 1 to enable)
+#        - theme: Wish theme.
+#        - powerline: Enable / Disable powerline. (0 to disable, 1 to enable)
+#
+#   plugin: Adds a plugin to the section the block is added to. All config for
+#           that plugin goes there. The key "name" defines the plugin to use.
+#           Plugin blocks outside a section are ignored.
+#
+# Section names are enclosed in || (e.g. |left|). All blocks after a section
+# starts and before the next section begins are considered a part of that
+# section. Blocks don't necessarily need to be in a section.
+#
+# Available sections are left, right for left prompt and right prompt
+# respectively.
+
+[core]
+auto_newline = 1
+powerline = 1
+theme = plain
+
+|left|
+[plugin]
+name = exit_code_smiley
+
+[plugin]
+name = bg_jobs
+
+[plugin]
+name = date
+format = %d %b %H:%M
+
+[plugin]
+name = path
+
+[plugin]
+name = newline
+
+[plugin]
+name = vcs
+
+|right|
