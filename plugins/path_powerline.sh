@@ -24,7 +24,7 @@ function wish_path_lensum() {
 function wish_path_powerline_shrink() {
 	local IFS='/'
 	local path=( $1 )
-	local max=$2
+	local max=$(( $2 - 3 * ${#path[@]} ))
 	for ((i=0; i <$((${#path[@]} - 1)); i++)); do
 		path[$i]=${path[$i]:0:1}
 		if [[ $(wish_path_lensum ${path[@]}) -lt $max ]]; then
