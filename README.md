@@ -91,7 +91,7 @@ name = hostname
 
 which results in the following prompt
 
-![](https://i.imgur.com/3iPFL5v.png)
+![](https://i.imgur.com/mhM83iL.png)
 
 # Wiki
 
