@@ -1,12 +1,14 @@
 # Wish
 
-A customizable bash prompt.
+A customizable, extensible, themable bash prompt.
+
+![](https://webionite.com/wish/images/wish.png)
 
 # Installation
 
 ## One step Installation
 
-`curl https://gitlab.com/ceda_ei/wish/raw/master/install.sh | bash`
+```curl https://gitlab.com/ceda_ei/wish/raw/master/install.sh | bash```
 
 ## Manual Installation
 
@@ -91,7 +93,7 @@ name = hostname
 
 which results in the following prompt
 
-![](https://i.imgur.com/mhM83iL.png)
+![](https://webionite.com/wish/images/prompt.png)
 
 # Wiki
 
