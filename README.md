@@ -4,11 +4,22 @@ A customizable, extensible, themable bash prompt.
 
 ![](https://webionite.com/wish/images/wish.png)
 
+## Features
+
++ **Extensible**: Parts can be added using simple plugins.
++ **Themable**: Choose from an existing theme or create your own.
++ **Customizable**: The prompt can be customized via a simple config file.
++ **Right Prompt**: Allows for two prompts — one on left, one on right.
++ **Auto newline**: Automatically adds a newline if the last output doesn't end with one.
++ **Powerline support**: Supports powerline symbols in both prompts.
+
 # Installation
 
 ## One step Installation
 
-```curl https://gitlab.com/ceda_ei/wish/raw/master/install.sh | bash```
+```sh
+curl https://gitlab.com/ceda_ei/wish/raw/master/install.sh | bash
+```
 
 ## Manual Installation
 
@@ -91,7 +102,7 @@ format = %a %b %H:%M
 name = hostname
 ```
 
-which results in the following prompt
+Which results in the following prompt
 
 ![](https://webionite.com/wish/images/prompt.png)
 
