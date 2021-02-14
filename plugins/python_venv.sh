@@ -13,7 +13,7 @@ function wish_python_venv_set_colors() {
 
 function wish_python_venv_main() {
 	if [[ -v VIRTUAL_ENV ]]; then
-		local venv=$(echo $VIRTUAL_ENV | sed 's|.*/||')
+		local venv=$(echo $VIRTUAL_ENV | sed ';s|/.venv$||;s|.*/||')
 		wish_append $WISH_PYTHON_VENV_BG $WISH_PYTHON_VENV_FG " $venv "
 	else
 		wish_append $WISH_PYTHON_VENV_BG $WISH_PYTHON_VENV_FG ""
