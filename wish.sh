@@ -3,8 +3,8 @@
 # INTERNAL USE ONLY! Do not use this in plugins.
 function wish_print_right_prompt() {
 	local idx=0
-	for i in ${WISH_RPL[@]}; do
-		echo "\e[$(($COLUMNS - $i + 1))G${WISH_RIGHT_PS1[$idx]}"
+	for i in "${WISH_RPL[@]}"; do
+		echo "\e[$((COLUMNS - i + 1))G${WISH_RIGHT_PS1[idx]}"
 		((idx++))
 	done
 }
@@ -22,7 +22,7 @@ function wish_init() {
 	# Source config files
 	for path in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
 		if [[ -f "$path/wish/wish.py" ]]; then
-			source <($path/wish/wish.py ${WISH_CONFIG_FILE[@]})
+			source <($path/wish/wish.py "${WISH_CONFIG_FILE[@]}")
 			break
 		fi
 	done
@@ -34,11 +34,12 @@ function wish_init() {
 	fi
 	local plugin
 	local path
-	for plugin in ${WISH_PLUGINS_SOURCE[@]}; do
-		for path in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
+	for plugin in "${WISH_PLUGINS_SOURCE[@]}"; do
+		if ! for path in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
 			source "$path/wish/plugins/$plugin.sh" &> /dev/null && break
-		done
-		[[ $? -ne 0 ]] && echo "Plugin $plugin not found." >&2
+		done; then
+			echo "Plugin $plugin not found." >&2
+		fi
 	done
 
 	# Source theme
@@ -60,8 +61,8 @@ function wish_init() {
 	done
 
 	# Call plugins to set colors
-	for plugin in ${WISH_PLUGINS[@]} ${WISH_RIGHT_PLUGINS[@]}; do
-		eval wish_$(echo $plugin)_set_colors $prev
+	for plugin in "${WISH_PLUGINS[@]}" "${WISH_RIGHT_PLUGINS[@]}"; do
+		eval wish_${plugin}_set_colors $prev
 	done
 }
 
@@ -186,7 +187,7 @@ function wish_main() {
 	WISH_LPLINE=0
 	local i
 	# Set newline
-	if [[ $WISH_AUTONEWLINE != 0 ]]; then
+	if [[ $WISH_AUTO_NEWLINE != 0 ]]; then
 		echo -ne "\033[6n" ; read -s -d ';'; read -s -d R WISH_CURSOR_POSITION
 		if [[ $WISH_CURSOR_POSITION != "1" ]]; then
 			PS1="\n"
