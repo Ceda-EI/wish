@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090
 
 # INTERNAL USE ONLY! Do not use this in plugins.
 function wish_print_right_prompt() {
@@ -26,6 +27,10 @@ function wish_init() {
 			break
 		fi
 	done
+
+	# Set defaults for core if not found
+	: "${WISH_POWERLINE_LEFT:=}"
+	: "${WISH_POWERLINE_RIGHT=}"
 	# Source all plugins
 	# If WISH_CONFIG_FILE is not set, then assume that the user hasn't updated
 	# to a config file yet. Set WISH_PLUGINS_SOURCE=WISH_PLUGINS.
@@ -205,12 +210,12 @@ function wish_main() {
 						local next_plugin=${WISH_PLUGINS[$(($i+1))]}
 						local fg_name="WISH_${plugin^^}_BG"
 						local bg_name="WISH_${next_plugin^^}_BG"
-						wish_append ${!bg_name} ${!fg_name} 
+						wish_append ${!bg_name} ${!fg_name} "${WISH_POWERLINE_LEFT}"
 					fi
 				else
 					local plugin=${WISH_PLUGINS[$i]}
 					local fg_name="WISH_${plugin^^}_BG"
-					wish_append -1 ${!fg_name} 
+					wish_append -1 ${!fg_name} "${WISH_POWERLINE_LEFT}"
 				fi
 			fi
 		fi
@@ -223,13 +228,13 @@ function wish_main() {
 				if [[ $i == 0 ]]; then
 					local plugin=${WISH_RIGHT_PLUGINS[$i]}
 					local fg_name="WISH_${plugin^^}_BG"
-					wish_append -1 ${!fg_name} 
+					wish_append -1 ${!fg_name} "${WISH_POWERLINE_RIGHT}"
 				elif wish_${WISH_RIGHT_PLUGINS[$(($i - 1))]}_start $prev; then
 					local plugin=${WISH_RIGHT_PLUGINS[$i]}
 					local prev_plugin=${WISH_RIGHT_PLUGINS[$(($i-1))]}
 					local fg_name="WISH_${plugin^^}_BG"
 					local bg_name="WISH_${prev_plugin^^}_BG"
-					wish_append ${!bg_name} ${!fg_name} 
+					wish_append ${!bg_name} ${!fg_name} "${WISH_POWERLINE_RIGHT}"
 				fi
 			fi
 		fi
