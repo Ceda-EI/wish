@@ -23,7 +23,7 @@ function wish_init() {
 	# Source config files
 	for path in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
 		if [[ -f "$path/wish/wish.py" ]]; then
-			source <($path/wish/wish.py "${WISH_CONFIG_FILE[@]}")
+			source <("$path/wish/wish.py" "${WISH_CONFIG_FILE[@]}")
 			break
 		fi
 	done
@@ -50,10 +50,9 @@ function wish_init() {
 	# Source theme
 	WISH_THEME=${WISH_THEME:-plain}
 	while :; do
-		for theme in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
+		if for theme in "$XDG_CONFIG_HOME" "/usr/share" "$HOME/.config"; do
 			source "$theme/wish/themes/$WISH_THEME.sh" &> /dev/null && break
-		done
-		if [[ $? -eq 0 ]]; then
+		done; then
 			break
 		else
 			echo "Theme $WISH_THEME not found. Using theme plain." >&2
@@ -67,7 +66,7 @@ function wish_init() {
 
 	# Call plugins to set colors
 	for plugin in "${WISH_PLUGINS[@]}" "${WISH_RIGHT_PLUGINS[@]}"; do
-		eval wish_${plugin}_set_colors $prev
+		"wish_${plugin}_set_colors" "$prev"
 	done
 }
 
@@ -103,7 +102,7 @@ function wish_append_left() {
 	local prompt_text="${text@P}"
 	if [[ $text == "\n" ]]; then
 		((WISH_LPLINE++))
-		WISH_LPL=(${WISH_LPL[@]} 0)
+		WISH_LPL=("${WISH_LPL[@]}" 0)
 		WISH_LEFT_PS1="$WISH_LEFT_PS1$colors$text"
 	else
 		if [[ $((${WISH_LPL[$WISH_LPLINE]} + ${#prompt_text})) -lt $COLUMNS ]]; then
@@ -122,7 +121,7 @@ function wish_append_right() {
 	if [[ $text == "\n" ]]; then
 		((WISH_RPLINE++))
 		WISH_RIGHT_PS1=("${WISH_RIGHT_PS1[@]}" "")
-		WISH_RPL=(${WISH_RPL[@]} 0)
+		WISH_RPL=("${WISH_RPL[@]}" 0)
 	elif [[ $((${WISH_LPL[$WISH_RPLINE]} + ${WISH_RPL[$WISH_RPLINE]} + ${#prompt_text})) -lt $COLUMNS ]]; then
 		WISH_RIGHT_PS1[$WISH_RPLINE]="${WISH_RIGHT_PS1[$WISH_RPLINE]}$colors$text"
 		WISH_RPL[$WISH_RPLINE]=$((${WISH_RPL[$WISH_RPLINE]} + ${#prompt_text}))
@@ -142,8 +141,10 @@ function wish_append() {
 	local bg_code=$1
 	local fg_code=$2
 	local text=$3
-	local fg=$(color_to_escape_code 3 $fg_code)
-	local bg=$(color_to_escape_code 4 $bg_code)
+	local fg
+	local bg
+	fg=$(color_to_escape_code 3 "$fg_code")
+	bg=$(color_to_escape_code 4 "$bg_code")
 
 	if [[ $fg_code == -1 ]]; then
 		case $WISH_STATE in
@@ -173,9 +174,9 @@ function wish_append() {
 # line.
 wish_remaining_chars() {
 	if [[ $WISH_STATE -eq 0 ]]; then
-		echo "$(( $COLUMNS - ${WISH_LPL[$WISH_LPLINE]} ))"
+		echo "$(( COLUMNS - ${WISH_LPL[$WISH_LPLINE]} ))"
 	else
-		echo "$(( $COLUMNS - ${WISH_LPL[$WISH_RPLINE]} - ${WISH_RPL[$WISH_RPLINE]} ))"
+		echo "$(( COLUMNS - ${WISH_LPL[$WISH_RPLINE]} - ${WISH_RPL[$WISH_RPLINE]} ))"
 	fi
 }
 
@@ -193,7 +194,10 @@ function wish_main() {
 	local i
 	# Set newline
 	if [[ $WISH_AUTO_NEWLINE != 0 ]]; then
-		echo -ne "\033[6n" ; read -s -d ';'; read -s -d R WISH_CURSOR_POSITION
+		echo -ne "\033[6n"
+		read -rs -d ';'
+		# shellcheck disable=SC2034
+		read -rs -d R WISH_CURSOR_POSITION
 		if [[ $WISH_CURSOR_POSITION != "1" ]]; then
 			PS1="\n"
 		fi
@@ -201,21 +205,21 @@ function wish_main() {
 	# Generate left prompt.
 	WISH_STATE=0  # 0 = left prompt, 1 = right prompt
 	for i in $(seq 0 $((${#WISH_PLUGINS[@]} - 1))); do
-		wish_${WISH_PLUGINS[i]}_main $prev
+		"wish_${WISH_PLUGINS[i]}_main" "$prev"
 		if [[ -v WISH_POWERLINE ]] && [[ $WISH_POWERLINE != 0 ]]; then
-			if wish_${WISH_PLUGINS[$i]}_end $prev; then
+			if "wish_${WISH_PLUGINS[$i]}_end" $prev; then
 				if [[ $i -lt $((${#WISH_PLUGINS[@]} - 1)) ]]; then
-					if wish_${WISH_PLUGINS[$(($i + 1))]}_start $prev; then
+					if "wish_${WISH_PLUGINS[$((i + 1))]}_start" "$prev"; then
 						local plugin=${WISH_PLUGINS[$i]}
-						local next_plugin=${WISH_PLUGINS[$(($i+1))]}
+						local next_plugin=${WISH_PLUGINS[$((i + 1))]}
 						local fg_name="WISH_${plugin^^}_BG"
 						local bg_name="WISH_${next_plugin^^}_BG"
-						wish_append ${!bg_name} ${!fg_name} "${WISH_POWERLINE_LEFT}"
+						wish_append "${!bg_name}" "${!fg_name}" "${WISH_POWERLINE_LEFT}"
 					fi
 				else
 					local plugin=${WISH_PLUGINS[$i]}
 					local fg_name="WISH_${plugin^^}_BG"
-					wish_append -1 ${!fg_name} "${WISH_POWERLINE_LEFT}"
+					wish_append -1 "${!fg_name}" "${WISH_POWERLINE_LEFT}"
 				fi
 			fi
 		fi
@@ -224,26 +228,28 @@ function wish_main() {
 	WISH_STATE=1
 	for i in $(seq 0 $((${#WISH_RIGHT_PLUGINS[@]} - 1))); do
 		if [[ -v WISH_POWERLINE ]] && [[ $WISH_POWERLINE != 0 ]]; then
-			if wish_${WISH_RIGHT_PLUGINS[$i]}_end $prev; then
+			if "wish_${WISH_RIGHT_PLUGINS[$i]}_end" "$prev"; then
 				if [[ $i == 0 ]]; then
 					local plugin=${WISH_RIGHT_PLUGINS[$i]}
 					local fg_name="WISH_${plugin^^}_BG"
-					wish_append -1 ${!fg_name} "${WISH_POWERLINE_RIGHT}"
-				elif wish_${WISH_RIGHT_PLUGINS[$(($i - 1))]}_start $prev; then
+					wish_append -1 "${!fg_name}" "${WISH_POWERLINE_RIGHT}"
+				elif "wish_${WISH_RIGHT_PLUGINS[$((i - 1))]}_start" $prev; then
 					local plugin=${WISH_RIGHT_PLUGINS[$i]}
-					local prev_plugin=${WISH_RIGHT_PLUGINS[$(($i-1))]}
+					local prev_plugin=${WISH_RIGHT_PLUGINS[$((i - 1))]}
 					local fg_name="WISH_${plugin^^}_BG"
 					local bg_name="WISH_${prev_plugin^^}_BG"
-					wish_append ${!bg_name} ${!fg_name} "${WISH_POWERLINE_RIGHT}"
+					wish_append "${!bg_name}" "${!fg_name}" "${WISH_POWERLINE_RIGHT}"
 				fi
 			fi
 		fi
-		wish_${WISH_RIGHT_PLUGINS[$i]}_main $prev
+		"wish_${WISH_RIGHT_PLUGINS[$i]}_main" "$prev"
 	done
 	# Save cursor position, print right prompt, restore cursor position,
 	# print left prompt, reset terminal
+	# shellcheck disable=SC2025
 	PS1=$PS1"\[\e7"
 	PS1="$PS1$(wish_print_right_prompt)"
+	# shellcheck disable=SC2025
 	PS1="$PS1\e8\]$WISH_LEFT_PS1\[\033[0;5;0m\]"
 }
 
