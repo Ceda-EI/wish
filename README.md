@@ -27,6 +27,12 @@ curl https://gitlab.com/ceda_ei/wish/raw/master/install.sh | bash
 + `git clone https://gitlab.com/ceda_ei/wish.git`
 + `cp wish/config.default.gie wish/config.gie`
 
+
+# Documentation
+
+[Check the wiki for details about customization and
+plugins.](https://wish.readthedocs.io/)
+
 # Customization
 
 Customization of wish is done using a gINIe file (format specific to wish)
@@ -105,7 +111,3 @@ name = hostname
 Which results in the following prompt
 
 ![](https://webionite.com/wish/images/prompt.png)
-
-# Wiki
-
-[Check the wiki for details about customization and plugins.](https://gitlab.com/ceda_ei/wish/wikis/home)
