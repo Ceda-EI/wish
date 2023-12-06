@@ -6,3 +6,31 @@ theme: readthedocs
 markdown_extensions:
   - toc:
       permalink: true
+
+
+nav:
+  - index.md
+  - Installation.md
+  - Customization.md
+  - Themes.md
+  - plugins:
+    - plugins/battery.md
+    - plugins/bgjobs.md
+    - plugins/customtext.md
+    - plugins/date.md
+    - plugins/exitcode.md
+    - plugins/exitcodesmiley.md
+    - plugins/hostname.md
+    - plugins/newline.md
+    - plugins/path.md
+    - plugins/path_powerline.md
+    - plugins/pythonvenv.md
+    - plugins/space.md
+    - plugins/tmux.md
+    - plugins/username.md
+    - plugins/vcs.md
+  - development:
+    - development/creating_plugins.md
+    - development/creating_themes.md
+  - reference:
+    - reference/gINIe.md
