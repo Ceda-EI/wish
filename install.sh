@@ -3,12 +3,8 @@
 if hash git; then
 	git clone https://gitlab.com/ceda_ei/Wish.git $HOME/.config/wish
 else
-	curl https://gitlab.com/ceda_ei/wish/-/archive/master/wish-master.tar -o /tmp/wish.tar
-	mkdir $HOME/.config 2> /dev/null
-	cd /tmp/
-	tar xf wish.tar
-	mv wish-master/ wish/
-	mv wish/ $HOME/.config/
+	echo 'Git not found. Please install git.' >&2
+	exit 1
 fi
 cp $HOME/.config/wish/config.default.gie $HOME/.config/wish/config.gie
 

@@ -18,7 +18,7 @@ A customizable, extensible, themable bash prompt.
 ## One step Installation
 
 ```sh
-curl https://gitlab.com/ceda_ei/wish/raw/master/install.sh | bash
+curl https://gitlab.com/ceda_ei/wish/raw/main/install.sh | bash
 ```
 
 ## Manual Installation
