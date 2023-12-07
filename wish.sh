@@ -84,13 +84,13 @@ function color_to_escape_code() {
 	if [[ $color == -1 ]]; then
 		echo "\[\033[0;5;0m\]"
 	else
-		if [[ ${#fg_code} -eq 6 ]]; then
+		if [[ ${#color} -eq 6 ]]; then
 			local r=$(( 16#${color:0:2} ))
 			local g=$(( 16#${color:2:2} ))
 			local b=$(( 16#${color:4:2} ))
 			echo "\[\033[${choice}8;2;$r;$g;${b}m\]"
 		else
-			echo "\[\033[${choice}8;5;${fg_code}m\]"
+			echo "\[\033[${choice}8;5;${color}m\]"
 		fi
 	fi
 }
