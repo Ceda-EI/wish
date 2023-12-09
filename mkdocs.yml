@@ -25,6 +25,7 @@ nav:
     - plugins/path.md
     - plugins/path_powerline.md
     - plugins/pythonvenv.md
+    - plugins/reinit.md
     - plugins/space.md
     - plugins/tmux.md
     - plugins/username.md
