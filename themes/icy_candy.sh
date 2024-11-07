@@ -8,8 +8,8 @@ function wish_icy_candy_theme {
 	local j=0
 	for i in "${WISH_PLUGINS[@]}"; do
 		[[ $i =~ newline$ ]] && j=0 && continue
-		eval "WISH_${i^^}_FG=${fg_gradient[$j]}"
-		eval "WISH_${i^^}_BG=${l_gradient[$j]}"
+		declare "WISH_${i^^}_FG=${fg_gradient[$j]}"
+		declare "WISH_${i^^}_BG=${l_gradient[$j]}"
 		((j++))
 		if [[ $j -eq ${#l_gradient[@]} ]]; then
 			j=0
@@ -20,8 +20,8 @@ function wish_icy_candy_theme {
 	for ((idx=$((${#WISH_RIGHT_PLUGINS[@]} - 1)); idx >= 0; idx--)); do
 		i=${WISH_RIGHT_PLUGINS[$idx]}
 		[[ $i =~ newline$ ]] && j=0 && continue
-		eval "WISH_${i^^}_BG=${r_gradient[$j]}"
-		eval "WISH_${i^^}_FG=${fg_gradient[$j]}"
+		declare "WISH_${i^^}_BG=${r_gradient[$j]}"
+		declare "WISH_${i^^}_FG=${fg_gradient[$j]}"
 		((j++))
 		if [[ $j -eq ${#r_gradient[@]} ]]; then
 			j=0
